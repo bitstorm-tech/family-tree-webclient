@@ -1,5 +1,14 @@
 <template>
   <section class="section">
+
+    <div class="columns">
+      <div class="column">
+        <ul>
+          <li v-for="person in getPersons" :key="person.key">{{person.payload.firstName}} {{person.payload.lastName}}</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="columns">
       <div class="column">
         <b-field label="First Name">
@@ -65,6 +74,7 @@
 export default {
   data() {
     return {
+      persons: [],
       person: {
         firstName: "",
         lastName: "",
@@ -76,6 +86,7 @@ export default {
       }
     };
   },
+
   methods: {
     async save() {
       try {
@@ -83,11 +94,21 @@ export default {
           key: "",
           payload: this.person
         };
-        await this.$axios.$put("/persons", person);
+        this.$store.dispatch("upsertPerson", person);
       } catch (error) {
         console.log("Error while upsert person", error);
       }
     }
+  },
+
+  computed: {
+    getPersons() {
+      return this.$store.getters.persons;
+    }
+  },
+
+  created() {
+    this.$store.dispatch("loadPersons");
   }
 };
 </script>
