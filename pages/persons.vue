@@ -2,22 +2,32 @@
   <section class="section">
 
     <div class="columns">
+      <div class="column is-1">
+        <button class="button" @click="newPerson">New</button>
+      </div>
+      <div class="column is-1">
+        <button class="button" @click="save" :disabled="editedPerson.payload.firstName.length === 0 && editedPerson.payload.lastName.length === 0">
+          Save
+        </button>
+      </div>
       <div class="column">
-        <ul>
-          <li v-for="person in getPersons" :key="person.key">{{person.payload.firstName}} {{person.payload.lastName}}</li>
-        </ul>
+        <b-select placeholder="Select Person">
+          <option v-for="person in getPersons" :key="person.key" :value="person.key">
+            {{person.payload.firstName}} {{person.payload.lastName}}
+          </option>
+        </b-select>
       </div>
     </div>
 
     <div class="columns">
       <div class="column">
         <b-field label="First Name">
-          <b-input v-model="person.firstName"></b-input>
+          <b-input v-model="editedPerson.payload.firstName"></b-input>
         </b-field>
       </div>
       <div class="column">
         <b-field label="Last Name">
-          <b-input v-model="person.lastName"></b-input>
+          <b-input v-model="editedPerson.payload.lastName"></b-input>
         </b-field>
       </div>
     </div>
@@ -25,12 +35,12 @@
     <div class="columns">
       <div class="column">
         <b-field label="Maiden Name">
-          <b-input v-model="person.maidenName"></b-input>
+          <b-input v-model="editedPerson.payload.maidenName"></b-input>
         </b-field>
       </div>
       <div class="column">
         <b-field label="Place Of Birth">
-          <b-input v-model="person.placeOfBirth"></b-input>
+          <b-input v-model="editedPerson.payload.placeOfBirth"></b-input>
         </b-field>
       </div>
     </div>
@@ -49,40 +59,46 @@
     </div>
 
     <div class="columns">
-      <div>Jobs</div>
+      <div class="column">
+        <div>Jobs</div>
+      </div>
     </div>
 
     <div class="columns">
       <div class="column">
         <b-field label="Additional notes">
-          <b-input type="textarea" v-model="person.notes"></b-input>
+          <b-input type="textarea" v-model="editedPerson.payload.notes"></b-input>
         </b-field>
       </div>
     </div>
 
     <div class="columns">
-      <div>Additional Documents</div>
-    </div>
-
-    <div class="columns">
-      <button class="button" @click="save">Save</button>
+      <div class="column">
+        <div>Additional Documents</div>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
+import { NewPerson } from "@/assets/js/models/person";
+
 export default {
   data() {
     return {
       persons: [],
-      person: {
-        firstName: "",
-        lastName: "",
-        maidenName: "",
-        placeOfBirth: "",
-        notes: "",
-        birthday: "",
-        death: ""
+      selectedPersonKey: "",
+      editedPerson: {
+        key: "",
+        payload: {
+          firstName: "",
+          lastName: "",
+          maidenName: "",
+          placeOfBirth: "",
+          notes: "",
+          birthday: "",
+          death: ""
+        }
       }
     };
   },
@@ -98,6 +114,9 @@ export default {
       } catch (error) {
         console.log("Error while upsert person", error);
       }
+    },
+    newPerson() {
+      this.editedPerson = NewPerson();
     }
   },
 
